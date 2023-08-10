@@ -6,7 +6,6 @@ from torchvision import transforms
 from torchvision.datasets import ImageFolder
 from torch.utils.data import DataLoader
 
-# Generator model
 class Generator(nn.Module):
     def __init__(self, latent_dim):
         super(Generator, self).__init__()
@@ -27,7 +26,6 @@ class Generator(nn.Module):
     def forward(self, x):
         return self.model(x)
 
-# Discriminator model
 class Discriminator(nn.Module):
     def __init__(self):
         super(Discriminator, self).__init__()
@@ -46,14 +44,12 @@ class Discriminator(nn.Module):
     def forward(self, x):
         return self.model(x)
 
-# Hyperparameters
 LATENT_DIM = 100
 BATCH_SIZE = 64
 EPOCHS = 50
 LEARNING_RATE = 0.0002
 BETA1 = 0.5
 
-# Initialize models and optimizers
 generator = Generator(LATENT_DIM)
 discriminator = Discriminator()
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -64,7 +60,6 @@ generator_optimizer = optim.Adam(generator.parameters(), lr=LEARNING_RATE, betas
 discriminator_optimizer = optim.Adam(discriminator.parameters(), lr=LEARNING_RATE, betas=(BETA1, 0.999))
 loss_fn = nn.BCELoss()
 
-# Load and preprocess the art dataset
 transform = transforms.Compose([
     transforms.Resize((28, 28)),
     transforms.ToTensor(),
@@ -74,9 +69,6 @@ transform = transforms.Compose([
 dataset = ImageFolder(root="/home/mahmood/Downloads/dataset", transform=transform)
 dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
 
-# ... Previous code ...
-
-# Training loop
 for epoch in range(EPOCHS):
     print(f"Epoch [{epoch+1}/{EPOCHS}]")
     for batch_images, _ in dataloader:
@@ -95,7 +87,6 @@ for epoch in range(EPOCHS):
         disc_loss.backward()
         discriminator_optimizer.step()
 
-        # Train generator
         generator_optimizer.zero_grad()
         noise = torch.randn(batch_size, LATENT_DIM).to(device)
         fake_images = generator(noise)
@@ -103,14 +94,13 @@ for epoch in range(EPOCHS):
         gen_loss.backward()
         generator_optimizer.step()
 
-# Training loop
     if epoch % 100 == 0:
         print(f"Epoch [{epoch}/{EPOCHS}] - Saving generated images...")
         # Save generated images
         generated_images = generator(torch.randn(BATCH_SIZE, LATENT_DIM).to(device))
         generated_images = (generated_images + 1) / 2  # Rescale from [-1, 1] to [0, 1]
 
-        # Create the directory if it doesn't exist
+
         os.makedirs("generated_images", exist_ok=True)
 
         for i in range(BATCH_SIZE):
@@ -122,14 +112,12 @@ for epoch in range(EPOCHS):
 
         print(f"Epoch {epoch}/{EPOCHS} - Saved generated images.")
 
-    # Rest of the code for training loop...
 
-# Save the final model
 torch.save(generator.state_dict(), "generator_model.pth")
 print("Training complete. Generator model saved.")
 
 
-# Save the final model
+
 torch.save(generator.state_dict(), "generator_model.pth")
 print("Training complete. Generator model saved.")
 print("Current working directory:", os.getcwd())
