@@ -38,7 +38,7 @@ class Discriminator(nn.Module):
             nn.Linear(512, 256),
             nn.ReLU(),
             nn.Linear(256, 1),
-            nn.Sigmoid()  # Using sigmoid activation for binary classification
+            nn.Sigmoid()  
         )
 
     def forward(self, x):
@@ -66,7 +66,7 @@ transform = transforms.Compose([
     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
 ])
 
-dataset = ImageFolder(root="/home/mahmood/Downloads/dataset", transform=transform)
+dataset = ImageFolder(root="/home/sajad/Downloads/dataset", transform=transform)
 dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
 
 for epoch in range(EPOCHS):
@@ -75,7 +75,7 @@ for epoch in range(EPOCHS):
         real_images = batch_images.to(device)
         batch_size = real_images.size(0)
         
-        # Train discriminator
+       
         discriminator_optimizer.zero_grad()
         noise = torch.randn(batch_size, LATENT_DIM).to(device)
         fake_images = generator(noise)
@@ -98,15 +98,15 @@ for epoch in range(EPOCHS):
         print(f"Epoch [{epoch}/{EPOCHS}] - Saving generated images...")
         # Save generated images
         generated_images = generator(torch.randn(BATCH_SIZE, LATENT_DIM).to(device))
-        generated_images = (generated_images + 1) / 2  # Rescale from [-1, 1] to [0, 1]
+        generated_images = (generated_images + 1) / 2  
 
 
         os.makedirs("generated_images", exist_ok=True)
 
         for i in range(BATCH_SIZE):
-            generated_image = generated_images[i].cpu()  # Move to CPU
-            generated_image = generated_image.view(3, 28, 28)  # Reshape to (C, H, W)
-            print("Generated image shape:", generated_image.shape)  # Print shape for debugging
+            generated_image = generated_images[i].cpu() 
+            generated_image = generated_image.view(3, 28, 28)  
+            print("Generated image shape:", generated_image.shape)  
             image = transforms.ToPILImage()(generated_image)
             image.save(f"generated_images/epoch_{epoch}_sample_{i}.png")
 
